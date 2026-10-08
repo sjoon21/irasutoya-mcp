@@ -12,7 +12,7 @@
 
 | ツール | 動作 | 入力 |
 |---|---|---|
-| `search_illustrations` | 検索結果の JSON（タイトル、ラベル、説明文、元画像 URL）と 200px のサムネイル画像を返します。読み取り専用です。 | `keywords_ja: list[str]`, `limit: int = 8` |
+| `search_illustrations` | 検索結果の JSON（タイトル、ラベル、説明文、元画像 URL の一覧）と 200px のサムネイル画像を返します。男女や色違いなど複数のバリエーションがある投稿は、すべての元画像 URL を含みます。読み取り専用です。 | `keywords_ja: list[str]`, `limit: int = 8` |
 | `download_illustration` | 元の PNG を指定したフォルダに保存し、保存先のパスを返します。 | `image_url: str`, `dest_dir: str` |
 
 ## インストール

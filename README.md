@@ -12,7 +12,7 @@
 
 | Tool | 동작 | 입력 |
 |---|---|---|
-| `search_illustrations` | 검색 결과 JSON(제목, 라벨, 설명, 원본 URL)과 200px 썸네일 이미지를 반환합니다. 읽기 전용입니다. | `keywords_ja: list[str]`, `limit: int = 8` |
+| `search_illustrations` | 검색 결과 JSON(제목, 라벨, 설명, 원본 URL 목록)과 200px 썸네일 이미지를 반환합니다. 남녀나 색상처럼 변형이 여러 장인 게시물은 원본 URL을 모두 담습니다. 읽기 전용입니다. | `keywords_ja: list[str]`, `limit: int = 8` |
 | `download_illustration` | 원본 PNG를 지정한 폴더에 저장하고 경로를 반환합니다. | `image_url: str`, `dest_dir: str` |
 
 ## 설치

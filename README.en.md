@@ -12,7 +12,7 @@ An MCP server that searches and downloads illustrations from [いらすとや (I
 
 | Tool | What it does | Input |
 |---|---|---|
-| `search_illustrations` | Returns search results as JSON (title, labels, description, original image URL) plus a 200px thumbnail image for each result. Read-only. | `keywords_ja: list[str]`, `limit: int = 8` |
+| `search_illustrations` | Returns search results as JSON (title, labels, description, original image URLs) plus a 200px thumbnail image for each result. When a post has several variants (e.g. male/female, colors), every original URL is included. Read-only. | `keywords_ja: list[str]`, `limit: int = 8` |
 | `download_illustration` | Saves the original PNG to the given directory and returns the file path. | `image_url: str`, `dest_dir: str` |
 
 ## Installation

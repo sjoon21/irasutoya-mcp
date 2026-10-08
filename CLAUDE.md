@@ -18,14 +18,15 @@
 
 - 입력: `keywords_ja: list[str]`, `limit: int = 8`
 - 출력
-  - 텍스트(JSON): 후보마다 `title`, `labels`, `description`, `page_url`, `image_url`(원본), `has_thumbnail`
+  - 텍스트(JSON): 후보마다 `title`, `labels`, `description`, `page_url`, `image_urls`(원본 목록), `thumbnail_url`, `has_thumbnail`
+  - 한 게시물에 변형(남녀, 색상 등)이 여러 장이면 `image_urls`에 모두 담고, 썸네일은 그 변형들을 한 장에 모은 대표 이미지를 씀
   - 이미지: `has_thumbnail`이 참인 후보만 같은 순서로 `s200` 썸네일을 `ImageContent`로 반환함
   - 썸네일 요청이 실패해도(예: `503`) 검색 결과 전체를 실패시키지 않음
 - annotations: `readOnlyHint: true`, `openWorldHint: true`, `title`
 
 ### `download_illustration` (쓰기)
 
-- 입력: `image_url: str`, `dest_dir: str`
+- 입력: `image_url: str` (`image_urls` 중 하나), `dest_dir: str`
 - 동작: 원본 투명 PNG를 저장하고 저장 경로를 반환함
 - annotations: `readOnlyHint: false`, `destructiveHint: false`, `openWorldHint: true`, `title`
 - `image_url`의 호스트가 `blogger.googleusercontent.com`인지 검증함
@@ -38,21 +39,23 @@
 
 | 용도 | 엔드포인트 |
 |---|---|
-| 키워드 검색 | `https://www.irasutoya.com/feeds/posts/summary?alt=json&q=<키워드>&max-results=<n>` |
-| 라벨 필터 | `https://www.irasutoya.com/feeds/posts/summary/-/<라벨>?alt=json` |
+| 키워드 검색 | `https://www.irasutoya.com/feeds/posts/default?alt=json&q=<키워드>&max-results=<n>` |
+| 라벨 필터 | `https://www.irasutoya.com/feeds/posts/default/-/<라벨>?alt=json` |
 | 페이지 넘김 | `&start-index=<n>` (1부터 시작) |
 
 - 전체 게시물: 25,424건 (`openSearch$totalResults`)
-- `summary` 피드는 `default`와 필드가 같고 응답이 약 40% 작다.
+- `summary` 피드는 응답이 약 40% 작지만 본문(`content`)이 없어 게시물의 대표 썸네일만 알 수 있다. 그래서 `default` 피드를 쓴다.
 - 응답 필드 경로
   - 제목: `entry[].title.$t`
   - 라벨: `entry[].category[].term`
-  - 설명문: `entry[].summary.$t`
+  - 본문 HTML: `entry[].content.$t` (개별 이미지 링크와 설명문이 들어 있음)
   - 썸네일: `entry[].media$thumbnail.url` (`s72-c` 크기)
   - 페이지 URL: `entry[].link[rel=alternate].href`
-- 이미지 크기 변경: URL의 `/s72-c/`를 `/s200/`, `/s400/`, `/s1000/`으로 바꾼다.
-  - 원본 해상도 경로(`s0` 등)는 아직 검증하지 않았다.
-  - 한 게시물에 이미지가 여러 장이면 `summary` 피드에는 첫 장만 나온다. 나머지는 `default` 피드의 `content.$t` HTML에서 꺼내야 한다.
+- 이미지 크기 변경: URL의 `/s72-c/`를 `/s200/`, `/s400/`, `/s0/`으로 바꾼다.
+  - `s0`은 리사이즈하지 않은 원본이다. `s1000`은 1000px보다 큰 원본을 줄인다(`eto_uma_family.png`: `s1000` 469KB, `s0` 673KB).
+- 한 게시물에 이미지가 여러 장인 경우: 900건 표본에서 14%였다.
+  - 이런 게시물의 대표 썸네일은 여러 장을 묶은 `thumbnail_*.jpg` 콜라주다. 흰 배경 JPG라 소재로 쓸 수 없다.
+  - 콜라주는 본문에도 링크로 들어 있으므로, 본문에서 이미지를 꺼낼 때 `thumbnail_` 접두사 파일은 제외한다.
 
 ## 알려진 난관
 
@@ -96,6 +99,7 @@ uv run python server.py                # stdio 서버 직접 실행
 - [x] `download_illustration`: 호스트 검증 후 PNG 저장 확인
 - [x] `.mcp.json`으로 Claude Code에 등록
 - [ ] 새 Claude Code 세션에서 실제 포스터 소재 요청으로 사용성 확인
-- [ ] 한 게시물에 이미지가 여러 장인 경우 처리 (`default` 피드의 `content.$t` 파싱)
-- [ ] `s1000`보다 큰 원본 해상도 경로 검증
+- [x] 한 게시물에 이미지가 여러 장인 경우 처리 (`default` 피드의 `content.$t` 파싱, 콜라주 제외)
+- [x] 원본 해상도 경로 검증 (`s0`)
+- [x] 썸네일 하나가 실패해도 검색 결과를 유지 (`has_thumbnail`)
 - [ ] 같은 검색을 반복할 때 쓸 로컬 응답 캐시

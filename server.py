@@ -1,4 +1,5 @@
 import asyncio
+import html
 import json
 import re
 from collections import Counter
@@ -10,12 +11,16 @@ from fastmcp import FastMCP
 from fastmcp.utilities.types import Image
 from mcp.types import ToolAnnotations
 
-FEED_URL = "https://www.irasutoya.com/feeds/posts/summary"
+# summary 피드는 본문이 없어 게시물 대표 썸네일만 알 수 있으므로, 개별 PNG 주소가 담긴 default 피드를 씀
+FEED_URL = "https://www.irasutoya.com/feeds/posts/default"
 IMAGE_HOST = "blogger.googleusercontent.com"
 THUMB_SIZE = "s200"
-ORIGINAL_SIZE = "s1000"  # ponytail: s1000 기준, 원본 해상도 경로(s0 등)는 미검증
+ORIGINAL_SIZE = "s0"  # s0은 리사이즈하지 않은 원본 (s1000은 1000px 초과 원본을 줄임)
 MAX_LIMIT = 20
 SIZE_SEGMENT = re.compile(r"/s\d+(-c)?/")
+IMAGE_LINK = re.compile(rf'(?:href|src)="(https://{re.escape(IMAGE_HOST)}/[^"]+)"')
+TAG = re.compile(r"<[^>]+>")
+COLLAGE_PREFIX = "thumbnail_"  # 여러 장을 묶은 게시물의 목록용 콜라주 JPG, 소재로 쓸 수 없음
 HEADERS = {"User-Agent": "irasutoya-mcp/0.1 (personal use)"}
 
 mcp = FastMCP("irasutoya")
@@ -26,16 +31,22 @@ def resize(url: str, size: str) -> str:
 
 
 def parse_entry(entry: dict) -> dict | None:
-    thumb = entry.get("media$thumbnail", {}).get("url")
-    if not thumb:
+    """게시물 하나를 정리한다. 여러 장을 묶은 게시물은 대표 썸네일이 콜라주 JPG이므로 본문의 개별 이미지를 모두 꺼낸다."""
+    body = entry.get("content", {}).get("$t", "")
+    image_urls = list(dict.fromkeys(
+        resize(u, ORIGINAL_SIZE) for u in IMAGE_LINK.findall(body)
+        if not u.rsplit("/", 1)[-1].startswith(COLLAGE_PREFIX)
+    ))
+    if not image_urls:
         return None
     page_url = next(l["href"] for l in entry["link"] if l["rel"] == "alternate")
     return {
         "title": entry["title"]["$t"],
         "labels": [c["term"] for c in entry.get("category", [])],
-        "description": entry.get("summary", {}).get("$t", "").strip(),
+        "description": " ".join(html.unescape(TAG.sub(" ", body)).split()),
         "page_url": page_url,
-        "image_url": resize(thumb, ORIGINAL_SIZE),
+        "image_urls": image_urls,
+        "thumbnail_url": entry.get("media$thumbnail", {}).get("url", image_urls[0]),
     }
 
 
@@ -54,10 +65,10 @@ def merge(results: list[list[dict]], limit: int) -> list[dict]:
     return [by_url[u] for u in ranked[:limit]]
 
 
-async def fetch_thumb(client: httpx.AsyncClient, image_url: str) -> Image:
-    resp = await client.get(resize(image_url, THUMB_SIZE))
+async def fetch_thumb(client: httpx.AsyncClient, thumbnail_url: str) -> Image:
+    resp = await client.get(resize(thumbnail_url, THUMB_SIZE))
     resp.raise_for_status()
-    fmt = "jpeg" if image_url.lower().endswith((".jpg", ".jpeg")) else "png"
+    fmt = "jpeg" if thumbnail_url.lower().endswith((".jpg", ".jpeg")) else "png"
     return Image(data=resp.content, format=fmt)
 
 
@@ -69,8 +80,10 @@ async def search_illustrations(keywords_ja: list[str], limit: int = 8) -> list:
 
     keywords_ja: Japanese noun keywords. Search is exact-orthography, so pass several
     spellings of the same concept (e.g. ["猿 バナナ", "サル バナナ", "猿"]); results are merged.
-    Returns a JSON list (title, labels, description, page_url, image_url, has_thumbnail)
-    followed by thumbnail images, in the same order, for the results whose has_thumbnail is true.
+    Returns a JSON list (title, labels, description, page_url, image_urls, thumbnail_url,
+    has_thumbnail) followed by thumbnail images, in the same order, for the results whose
+    has_thumbnail is true. A post may contain several variants (e.g. male/female, colors):
+    image_urls lists every original transparent PNG, and its thumbnail shows them together.
     """
     keywords = [k.strip() for k in keywords_ja if k.strip()]
     if not keywords:
@@ -82,7 +95,7 @@ async def search_illustrations(keywords_ja: list[str], limit: int = 8) -> list:
         posts = merge(results, limit)
         # 썸네일은 보조 정보라 일부가 실패해도 검색 결과는 그대로 돌려줌
         thumbs = await asyncio.gather(
-            *(fetch_thumb(client, p["image_url"]) for p in posts), return_exceptions=True
+            *(fetch_thumb(client, p["thumbnail_url"]) for p in posts), return_exceptions=True
         )
 
     ok = [not isinstance(t, BaseException) for t in thumbs]
@@ -102,7 +115,7 @@ async def search_illustrations(keywords_ja: list[str], limit: int = 8) -> list:
     )
 )
 async def download_illustration(image_url: str, dest_dir: str) -> str:
-    """Download an illustration PNG (image_url from search_illustrations) into dest_dir.
+    """Download an original illustration (one of image_urls from search_illustrations) into dest_dir.
 
     Returns the saved file path.
     """
