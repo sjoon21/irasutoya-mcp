@@ -10,9 +10,6 @@
 |---|---|---|
 | `search_illustrations` | 검색 결과 JSON(제목, 라벨, 설명, 원본 URL)과 200px 썸네일 이미지를 반환합니다. 읽기 전용입니다. | `keywords_ja: list[str]`, `limit: int = 8` |
 | `download_illustration` | 원본 PNG를 지정한 폴더에 저장하고 경로를 반환합니다. | `image_url: str`, `dest_dir: str` |
-
-이라스토야 검색은 표기에 민감합니다. `サル バナナ`로는 결과가 없지만 `猿 バナナ`로는 결과가 나옵니다. 그래서 `keywords_ja`는 같은 개념을 여러 표기로 받아 병렬로 검색하고, 결과를 합쳐서 반환합니다.
-
 ## 설치
 
 [uv](https://docs.astral.sh/uv/)가 필요합니다.
@@ -61,7 +58,7 @@ uv run pytest -q                       # 전체 테스트 (실제 네트워크 �
 uv run pytest -q -m "not integration"  # 단위 테스트만
 ```
 
-설계 결정과 피드 구조는 [`CLAUDE.md`](CLAUDE.md)에 정리되어 있습니다. 검색 표기 문제는 [hsol/irasutoya](https://github.com/hsol/irasutoya)를 참고했습니다.
+설계 결정과 피드 구조는 [`CLAUDE.md`](CLAUDE.md)에 정리되어 있습니다.
 
 ## License
 
