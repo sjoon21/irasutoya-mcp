@@ -1,5 +1,7 @@
 # irasutoya-mcp
 
+**한국어** | [English](README.en.md) | [日本語](README.ja.md)
+
 [いらすとや](https://www.irasutoya.com) 일러스트를 검색하고 내려받는 MCP 서버입니다. 검색 결과를 썸네일 이미지로 함께 돌려주므로, AI가 그림을 직접 보고 포스터나 슬라이드에 맞는 소재를 고를 수 있습니다.
 
 > 이라스토야와 관계없는 비공식 도구입니다. 이 저장소는 이미지를 포함하거나 재배포하지 않습니다. 이미지는 이라스토야 [이용 약관](https://www.irasutoya.com/p/faq.html)에 따라 사용해야 합니다.
@@ -10,6 +12,7 @@
 |---|---|---|
 | `search_illustrations` | 검색 결과 JSON(제목, 라벨, 설명, 원본 URL)과 200px 썸네일 이미지를 반환합니다. 읽기 전용입니다. | `keywords_ja: list[str]`, `limit: int = 8` |
 | `download_illustration` | 원본 PNG를 지정한 폴더에 저장하고 경로를 반환합니다. | `image_url: str`, `dest_dir: str` |
+
 ## 설치
 
 [uv](https://docs.astral.sh/uv/)가 필요합니다.
