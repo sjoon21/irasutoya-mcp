@@ -5,8 +5,8 @@ import pytest
 from fastmcp import Client
 from fastmcp.utilities.types import Image
 
-import server
-from server import IMAGE_HOST, merge, mcp, parse_entry, resize
+import irasutoya_mcp as server
+from irasutoya_mcp import IMAGE_HOST, merge, mcp, parse_entry, resize
 
 
 def test_resize_replaces_size_segment():

@@ -136,5 +136,9 @@ async def download_illustration(image_url: str, dest_dir: str) -> str:
     return str(path)
 
 
-if __name__ == "__main__":
+def main() -> None:
     mcp.run()
+
+
+if __name__ == "__main__":
+    main()

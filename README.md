@@ -17,20 +17,12 @@
 
 ## 설치
 
-[uv](https://docs.astral.sh/uv/)가 필요합니다.
-
-```bash
-git clone https://github.com/sjoon21/irasutoya-mcp
-cd irasutoya-mcp
-uv sync
-```
+[uv](https://docs.astral.sh/uv/)만 있으면 됩니다. 저장소를 clone하지 않아도 됩니다.
 
 ### Claude Code
 
-이 폴더에서 `claude`를 실행하면 `.mcp.json`에 등록된 서버가 자동으로 잡힙니다. 다른 폴더에서도 쓰려면 사용자 범위로 등록합니다.
-
 ```bash
-claude mcp add -s user irasutoya -- uv run --directory /path/to/irasutoya-mcp server.py
+claude mcp add -s user irasutoya -- uvx --from git+https://github.com/sjoon21/irasutoya-mcp irasutoya-mcp
 ```
 
 ### Claude Desktop, Cursor
@@ -40,10 +32,20 @@ claude mcp add -s user irasutoya -- uv run --directory /path/to/irasutoya-mcp se
 ```json
 {
   "irasutoya": {
-    "command": "uv",
-    "args": ["run", "--directory", "/path/to/irasutoya-mcp", "server.py"]
+    "command": "uvx",
+    "args": ["--from", "git+https://github.com/sjoon21/irasutoya-mcp", "irasutoya-mcp"]
   }
 }
+```
+
+macOS의 Claude Desktop이 `uvx`를 찾지 못하면 `command`에 절대 경로(`which uvx` 결과, 예: `/Users/<you>/.local/bin/uvx`)를 넣습니다.
+
+### 업데이트
+
+`uvx`는 처음 받은 버전을 캐시해 둡니다. 최신 버전을 받으려면 아래 명령을 한 번 실행하고 클라이언트를 다시 시작합니다.
+
+```bash
+uvx --refresh --from git+https://github.com/sjoon21/irasutoya-mcp irasutoya-mcp </dev/null
 ```
 
 ## 사용 예
@@ -59,6 +61,7 @@ claude mcp add -s user irasutoya -- uv run --directory /path/to/irasutoya-mcp se
 ## 개발
 
 ```bash
+git clone https://github.com/sjoon21/irasutoya-mcp && cd irasutoya-mcp && uv sync
 uv run pytest -q                       # 전체 테스트 (실제 네트워크 사용)
 uv run pytest -q -m "not integration"  # 단위 테스트만
 ```

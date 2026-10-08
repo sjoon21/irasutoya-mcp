@@ -2,7 +2,7 @@
   "mcpServers": {
     "irasutoya": {
       "command": "uv",
-      "args": ["run", "server.py"]
+      "args": ["run", "irasutoya-mcp"]
     }
   }
 }

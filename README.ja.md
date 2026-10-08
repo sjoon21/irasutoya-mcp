@@ -17,20 +17,12 @@
 
 ## インストール
 
-[uv](https://docs.astral.sh/uv/) が必要です。
-
-```bash
-git clone https://github.com/sjoon21/irasutoya-mcp
-cd irasutoya-mcp
-uv sync
-```
+必要なのは [uv](https://docs.astral.sh/uv/) だけです。リポジトリを clone する必要はありません。
 
 ### Claude Code
 
-このフォルダで `claude` を起動すると、`.mcp.json` に登録したサーバーが自動で読み込まれます。他のフォルダでも使う場合は、ユーザースコープで登録します。
-
 ```bash
-claude mcp add -s user irasutoya -- uv run --directory /path/to/irasutoya-mcp server.py
+claude mcp add -s user irasutoya -- uvx --from git+https://github.com/sjoon21/irasutoya-mcp irasutoya-mcp
 ```
 
 ### Claude Desktop、Cursor
@@ -40,10 +32,20 @@ claude mcp add -s user irasutoya -- uv run --directory /path/to/irasutoya-mcp se
 ```json
 {
   "irasutoya": {
-    "command": "uv",
-    "args": ["run", "--directory", "/path/to/irasutoya-mcp", "server.py"]
+    "command": "uvx",
+    "args": ["--from", "git+https://github.com/sjoon21/irasutoya-mcp", "irasutoya-mcp"]
   }
 }
+```
+
+macOS の Claude Desktop が `uvx` を見つけられない場合は、`command` に絶対パス（`which uvx` の結果。例: `/Users/<you>/.local/bin/uvx`）を指定します。
+
+### アップデート
+
+`uvx` は最初に取得したバージョンをキャッシュします。最新版にするには、次のコマンドを一度実行してからクライアントを再起動します。
+
+```bash
+uvx --refresh --from git+https://github.com/sjoon21/irasutoya-mcp irasutoya-mcp </dev/null
 ```
 
 ## 使用例
@@ -59,6 +61,7 @@ claude mcp add -s user irasutoya -- uv run --directory /path/to/irasutoya-mcp se
 ## 開発
 
 ```bash
+git clone https://github.com/sjoon21/irasutoya-mcp && cd irasutoya-mcp && uv sync
 uv run pytest -q                       # 全テスト（実際のネットワークを使用）
 uv run pytest -q -m "not integration"  # 単体テストのみ
 ```

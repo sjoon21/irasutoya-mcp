@@ -17,20 +17,12 @@ An MCP server that searches and downloads illustrations from [いらすとや (I
 
 ## Installation
 
-Requires [uv](https://docs.astral.sh/uv/).
-
-```bash
-git clone https://github.com/sjoon21/irasutoya-mcp
-cd irasutoya-mcp
-uv sync
-```
+All you need is [uv](https://docs.astral.sh/uv/). No need to clone the repository.
 
 ### Claude Code
 
-Run `claude` inside this directory and the server registered in `.mcp.json` is picked up automatically. To use it from any directory, register it at user scope:
-
 ```bash
-claude mcp add -s user irasutoya -- uv run --directory /path/to/irasutoya-mcp server.py
+claude mcp add -s user irasutoya -- uvx --from git+https://github.com/sjoon21/irasutoya-mcp irasutoya-mcp
 ```
 
 ### Claude Desktop, Cursor
@@ -40,10 +32,20 @@ Add the following entry under `mcpServers` in the config file:
 ```json
 {
   "irasutoya": {
-    "command": "uv",
-    "args": ["run", "--directory", "/path/to/irasutoya-mcp", "server.py"]
+    "command": "uvx",
+    "args": ["--from", "git+https://github.com/sjoon21/irasutoya-mcp", "irasutoya-mcp"]
   }
 }
+```
+
+If Claude Desktop on macOS can't find `uvx`, put its absolute path in `command` (the output of `which uvx`, e.g. `/Users/<you>/.local/bin/uvx`).
+
+### Updating
+
+`uvx` caches the version it first downloaded. To get the latest version, run the command below once and restart your client.
+
+```bash
+uvx --refresh --from git+https://github.com/sjoon21/irasutoya-mcp irasutoya-mcp </dev/null
 ```
 
 ## Example
@@ -59,6 +61,7 @@ Add the following entry under `mcpServers` in the config file:
 ## Development
 
 ```bash
+git clone https://github.com/sjoon21/irasutoya-mcp && cd irasutoya-mcp && uv sync
 uv run pytest -q                       # all tests (hits the real network)
 uv run pytest -q -m "not integration"  # unit tests only
 ```

@@ -6,7 +6,7 @@
 
 | 항목 | 결정 | 이유 |
 |---|---|---|
-| 배포 형태 | 로컬 stdio | 개인용이고, 다운로드가 로컬 파일시스템에 쓴다. 배포가 필요해지면 MCPB로 옮긴다. |
+| 배포 형태 | 로컬 stdio, `uvx --from git+https://github.com/sjoon21/irasutoya-mcp irasutoya-mcp`로 설치 | 다운로드가 로컬 파일시스템에 쓴다. 모듈 이름은 다른 환경과 충돌하지 않도록 `irasutoya_mcp`로 둔다. |
 | 언어·프레임워크 | Python 3.12 + FastMCP 4.x (`fastmcp`), `httpx`, `uv` | 참고 구현이 Python이고 외부 의존성이 거의 없다. |
 | Tool 패턴 | Tool 하나당 동작 하나, 2개 | 동작이 검색과 다운로드뿐이다. |
 | 인증 | 없음 | Blogger 공개 피드를 쓴다. |
@@ -84,14 +84,15 @@
 
 | 파일 | 역할 |
 |---|---|
-| `server.py` | MCP 서버 전체 (피드 검색, 결과 병합, 두 tool) |
-| `test_server.py` | 단위 테스트 2건, 실제 네트워크를 쓰는 통합 테스트 1건 |
+| `irasutoya_mcp.py` | MCP 서버 전체 (피드 검색, 결과 병합, 두 tool, `main()` 진입점) |
+| `test_irasutoya_mcp.py` | 단위 테스트 4건, 실제 네트워크를 쓰는 통합 테스트 1건 |
 | `.mcp.json` | Claude Code 프로젝트 범위 등록 |
 
 ```bash
 uv run pytest -q                       # 전체 테스트
 uv run pytest -q -m "not integration"  # 네트워크 없이 단위 테스트만
-uv run python server.py                # stdio 서버 직접 실행
+uv run irasutoya-mcp                   # stdio 서버 직접 실행
+uvx --from . irasutoya-mcp </dev/null  # 설치 경로(uvx) 확인, 표준 입력을 닫으면 바로 종료됨
 ```
 
 ## 진행 상황
