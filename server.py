@@ -69,8 +69,8 @@ async def search_illustrations(keywords_ja: list[str], limit: int = 8) -> list:
 
     keywords_ja: Japanese noun keywords. Search is exact-orthography, so pass several
     spellings of the same concept (e.g. ["猿 バナナ", "サル バナナ", "猿"]); results are merged.
-    Returns a JSON list (title, labels, description, page_url, image_url) followed by one
-    thumbnail image per result, in the same order.
+    Returns a JSON list (title, labels, description, page_url, image_url, has_thumbnail)
+    followed by thumbnail images, in the same order, for the results whose has_thumbnail is true.
     """
     keywords = [k.strip() for k in keywords_ja if k.strip()]
     if not keywords:
@@ -80,10 +80,16 @@ async def search_illustrations(keywords_ja: list[str], limit: int = 8) -> list:
     async with httpx.AsyncClient(headers=HEADERS, timeout=15) as client:
         results = await asyncio.gather(*(search_one(client, k, limit) for k in keywords))
         posts = merge(results, limit)
-        thumbs = await asyncio.gather(*(fetch_thumb(client, p["image_url"]) for p in posts))
+        # 썸네일은 보조 정보라 일부가 실패해도 검색 결과는 그대로 돌려줌
+        thumbs = await asyncio.gather(
+            *(fetch_thumb(client, p["image_url"]) for p in posts), return_exceptions=True
+        )
 
+    ok = [not isinstance(t, BaseException) for t in thumbs]
+    posts = [{**p, "has_thumbnail": has} for p, has in zip(posts, ok)]
+    images = [t for t, has in zip(thumbs, ok) if has]
     meta = json.dumps(posts, ensure_ascii=False, indent=1) if posts else f"No results for {keywords}"
-    return [meta, *thumbs]
+    return [meta, *images]
 
 
 @mcp.tool(

@@ -18,8 +18,9 @@
 
 - 입력: `keywords_ja: list[str]`, `limit: int = 8`
 - 출력
-  - 텍스트(JSON): 후보마다 `title`, `labels`, `description`, `page_url`, `image_url`(원본)
-  - 이미지: 후보마다 `s200` 썸네일을 `ImageContent`로 반환함
+  - 텍스트(JSON): 후보마다 `title`, `labels`, `description`, `page_url`, `image_url`(원본), `has_thumbnail`
+  - 이미지: `has_thumbnail`이 참인 후보만 같은 순서로 `s200` 썸네일을 `ImageContent`로 반환함
+  - 썸네일 요청이 실패해도(예: `503`) 검색 결과 전체를 실패시키지 않음
 - annotations: `readOnlyHint: true`, `openWorldHint: true`, `title`
 
 ### `download_illustration` (쓰기)
