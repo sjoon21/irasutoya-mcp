@@ -1,10 +1,12 @@
 # irasutoya-mcp
 
+<img src="assets/banner.png" alt="irasutoya-mcp: search, see & pick, use いらすとや illustrations" width="100%">
+
 [한국어](README.md) | [English](README.en.md) | **日本語**
 
 [いらすとや](https://www.irasutoya.com)のイラストを検索・ダウンロードできる MCP サーバーです。検索結果をサムネイル画像と一緒に返すので、AI が実際に絵を見て、ポスターやスライドに合う素材を選べます。
 
-> いらすとやとは関係のない非公式ツールです。このリポジトリには画像を含めておらず、再配布もしていません。画像はいらすとやの[ご利用について](https://www.irasutoya.com/p/faq.html)に従ってお使いください。
+> いらすとやとは関係のない非公式ツールです。このリポジトリでは素材の再配布は行っていません。上部のバナーは、いらすとやのイラストを使って制作したものです。画像はいらすとやの[ご利用について](https://www.irasutoya.com/p/faq.html)に従ってお使いください。
 
 ## ツール
 

@@ -1,10 +1,12 @@
 # irasutoya-mcp
 
+<img src="assets/banner.png" alt="irasutoya-mcp: search, see & pick, use いらすとや illustrations" width="100%">
+
 **한국어** | [English](README.en.md) | [日本語](README.ja.md)
 
 [いらすとや](https://www.irasutoya.com) 일러스트를 검색하고 내려받는 MCP 서버입니다. 검색 결과를 썸네일 이미지로 함께 돌려주므로, AI가 그림을 직접 보고 포스터나 슬라이드에 맞는 소재를 고를 수 있습니다.
 
-> 이라스토야와 관계없는 비공식 도구입니다. 이 저장소는 이미지를 포함하거나 재배포하지 않습니다. 이미지는 이라스토야 [이용 약관](https://www.irasutoya.com/p/faq.html)에 따라 사용해야 합니다.
+> 이라스토야와 관계없는 비공식 도구입니다. 이 저장소는 일러스트 소재를 재배포하지 않습니다. 상단 배너는 いらすとや 일러스트를 사용해 만든 이미지입니다. 이미지는 이라스토야 [이용 약관](https://www.irasutoya.com/p/faq.html)에 따라 사용해야 합니다.
 
 ## Tool
 

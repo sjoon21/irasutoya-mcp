@@ -1,10 +1,12 @@
 # irasutoya-mcp
 
+<img src="assets/banner.png" alt="irasutoya-mcp: search, see & pick, use いらすとや illustrations" width="100%">
+
 [한국어](README.md) | **English** | [日本語](README.ja.md)
 
 An MCP server that searches and downloads illustrations from [いらすとや (Irasutoya)](https://www.irasutoya.com). Search results come back with thumbnail images, so the AI can actually see each illustration and pick the right one for your poster or slides.
 
-> This is an unofficial tool, not affiliated with Irasutoya. This repository does not contain or redistribute any images. Use the images in accordance with Irasutoya's [terms of use](https://www.irasutoya.com/p/faq.html).
+> This is an unofficial tool, not affiliated with Irasutoya. This repository does not redistribute any illustration materials. The banner above is a work made with いらすとや illustrations. Use the images in accordance with Irasutoya's [terms of use](https://www.irasutoya.com/p/faq.html).
 
 ## Tools
 
