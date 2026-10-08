@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "irasutoya": {
+      "command": "uv",
+      "args": ["run", "server.py"]
+    }
+  }
+}
