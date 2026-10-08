@@ -80,6 +80,8 @@ async def search_illustrations(keywords_ja: list[str], limit: int = 8) -> list:
 
     keywords_ja: Japanese noun keywords. Search is exact-orthography, so pass several
     spellings of the same concept (e.g. ["猿 バナナ", "サル バナナ", "猿"]); results are merged.
+    Every word in one keyword string must match (AND), so 1-2 words per keyword work best;
+    3+ words usually return nothing.
     Returns a JSON list (title, labels, description, page_url, image_urls, thumbnail_url,
     has_thumbnail) followed by thumbnail images, in the same order, for the results whose
     has_thumbnail is true. A post may contain several variants (e.g. male/female, colors):
